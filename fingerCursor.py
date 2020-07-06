@@ -47,9 +47,6 @@ def fingerCursor(device):
     blue = (255,0,0)
     green = (0,255,0)
 
-    ## background segmentation
-    # fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
-
     # some kernels
     kernel_size = 5
     kernel1 = np.ones((kernel_size,kernel_size),np.float32)/kernel_size/kernel_size
@@ -71,9 +68,6 @@ def fingerCursor(device):
         res = cv2.erode(res, kernel1, iterations=1)
         res = cv2.dilate(res, kernel1, iterations=1)
 
-        # res = cv2.filter2D(res,-1,kernel2)    # hacky
-        # cv2.imshow('hey2',res)
-
         ## Canny edge detection at Gray space.
         rgb = cv2.cvtColor(res, cv2.COLOR_HSV2BGR)
         cv2.imshow('rgb_2',rgb)
@@ -83,18 +77,6 @@ def fingerCursor(device):
         # gray = cv2.filter2D(gray,-1,kernel2)    # hacky
         gray = cv2.GaussianBlur(gray, (11, 11), 0)
         cv2.imshow('gray',gray)
-        # _, gray = cv2.threshold(gray,30, 255,cv2.THRESH_BINARY)
-        # gray = cv2.dilate(gray, kernel2, iterations=1)
-        # cv2.imshow('2d',gray)
-
-        ## Canny edge detection at Gray space.
-        # canny = cv2.Canny(gray, 300, 600)
-        # cv2.imshow('canny',canny)
-        # canny = cv2.erode(canny, kernel1, iterations=1)
-        # canny = cv2.dilate(canny, kernel1, iterations=1)
-
-        ## Background segmentation using motion detection (Optional)
-        # fgmask = fgbg.apply(canny)
 
         ## main function: find finger cursor position & draw trajectory
         contours, hierarchy = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)    # find all contours in the image
@@ -139,14 +121,7 @@ def fingerCursor(device):
                     except:
                         print('error')
                         pass
-                ## If move too fast, erase all trajectories
-                # elif dist_pts > 200:
-                #     traj = np.array(topmost_last, np.uint16)
 
-        # traj = np.reshape( traj,(-1,1,2) )
-        # print(traj.shape)
-        # cv2.polylines(frame,[traj],0,orange,10)
-        # print(traj)
         for i in range(1, len(dist_records)):
             # try:
             thickness = int(-0.072 * dist_records[i] + 13)
